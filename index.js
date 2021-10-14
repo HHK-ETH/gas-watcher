@@ -16,10 +16,13 @@ var intervalId = setInterval(async function(){
         }
     });
     gasData = await fetchGasPrice.json();
-    if (client.user) {
-        client.user.setActivity("Gas: "+Math.round(gasData.blockPrices[0].baseFeePerGas + 2)+" GWEI", {
-            type: "CUSTOM",
+    if (client.user && gasData) {
+        client.user.setActivity("Fast="+Math.round(gasData.blockPrices[0].baseFeePerGas + gasData.blockPrices[0].estimatedPrices[0].maxPriorityFeePerGas)+" Slow="+Math.round(gasData.blockPrices[0].baseFeePerGas + 1), {
+            type: "PLAYING",
         });
+        const guild = client.guilds.cache.get('748031363935895552');
+        const user = await guild.members.fetch(client.user.id);
+        user.setNickname(Math.round(gasData.blockPrices[0].baseFeePerGas + 2)+" GWEI");
     }
   }, 10_000);
 
