@@ -16,7 +16,7 @@ var intervalId = setInterval(async function(){
         }
     });
     gasData = await fetchGasPrice.json();
-    if (client.user && gasData) {
+    if (client.user && gasData.blockPrices) {
         client.user.setActivity("Fast="+Math.round(gasData.blockPrices[0].baseFeePerGas + gasData.blockPrices[0].estimatedPrices[0].maxPriorityFeePerGas)+" Slow="+Math.round(gasData.blockPrices[0].baseFeePerGas + 1), {
             type: "PLAYING",
         });
