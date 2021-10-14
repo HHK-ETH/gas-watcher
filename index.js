@@ -8,7 +8,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAG
 let gasData = null;
 const prefix = 'eth!gas';
 
-//update gas every 10 seconds
+//update gas every 60 seconds
 var intervalId = setInterval(async function(){
     const fetchGasPrice = await fetch('https://api.blocknative.com/gasprices/blockprices', {method: 'GET', headers: {
         'Authorization': process.env.BLOCKNATIVE_TOKEN, 
@@ -24,7 +24,7 @@ var intervalId = setInterval(async function(){
         const user = await guild.members.fetch(client.user.id);
         await user.setNickname(Math.round(gasData.blockPrices[0].baseFeePerGas + 1)+" GWEI");
     }
-  }, 10_000);
+  }, 60_000);
 
 client.on('messageCreate', function(message) {
     if (message.author.bot) return;
