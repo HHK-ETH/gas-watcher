@@ -22,7 +22,7 @@ var intervalId = setInterval(async function(){
         });
         const guild = client.guilds.cache.get('748031363935895552');
         const user = await guild.members.fetch(client.user.id);
-        user.setNickname(Math.round(gasData.blockPrices[0].baseFeePerGas + 1)+" GWEI");
+        await user.setNickname(Math.round(gasData.blockPrices[0].baseFeePerGas + 1)+" GWEI");
     }
   }, 10_000);
 
