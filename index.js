@@ -17,8 +17,8 @@ var intervalId = setInterval(async function(){
     });
     gasData = await fetchGasPrice.json();
     if (client.user) {
-        client.user.setActivity("gas : "+Math.round(gasData.blockPrices[0].baseFeePerGas) + 2+" GWEI", {
-            type: "WATCHING",
+        client.user.setActivity("Gas: "+Math.round(gasData.blockPrices[0].baseFeePerGas + 2)+" GWEI", {
+            type: "CUSTOM",
         });
     }
   }, 10_000);
