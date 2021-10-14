@@ -5,11 +5,8 @@ dotenv.config();
 
 const client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILDS] });
 
-const gas = {
-    timestamp: 0,
-    data: null
-};
-const prefix = '!!gas';
+let gasData = null;
+const prefix = 'eth!gas';
 
 //update gas every 10 seconds
 var intervalId = setInterval(async function(){
@@ -18,9 +15,7 @@ var intervalId = setInterval(async function(){
         'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
-    const gasData = await fetchGasPrice.json();
-    gas.timestamp = new Date().getTime();
-    gas.data = gasData;
+    gasData = await fetchGasPrice.json();
     if (client.user) {
         client.user.setActivity("BaseFee: "+gasData.blockPrices[0].baseFeePerGas+" GWEI", {
             type: "WATCHING",
@@ -30,21 +25,21 @@ var intervalId = setInterval(async function(){
 
 client.on('messageCreate', function(message) {
     if (message.author.bot) return;
-    if (!message.content.startsWith(prefix)) return;
+    if (!message.content.startsWith(prefix) && gasData !== null) return;
+    if (message.channelId !== '809503313975443536') return; //can call only in #bot-command channel
 
-    const currentGas = gas.data.blockPrices[0];
+    const currentGas = gasData.blockPrices[0];
 
     const embedMsg = new MessageEmbed()
 	.setColor('#0099ff')
-	.setTitle('Current gas price :')
+	.setTitle('Gas price to make it into the next block :')
     .setDescription('Current baseFee : '+currentGas.baseFeePerGas+' GWEI')
 	.addFields(
-		{ name: ':orangutan:  FAST (99%) :', value: 'MaxFee => '+currentGas.estimatedPrices[0].maxFeePerGas+' & MaxPriorityFee => '+currentGas.estimatedPrices[0].maxPriorityFeePerGas },
-		{ name: ':rabbit2:  MEDIUM (90%) :', value: 'MaxFee => '+currentGas.estimatedPrices[2].maxFeePerGas+' & MaxPriorityFee => '+currentGas.estimatedPrices[2].maxPriorityFeePerGas },
-		{ name: ':turtle:  SLOW (70%) :', value: 'MaxFee => '+currentGas.estimatedPrices[4].maxFeePerGas+' & MaxPriorityFee => '+currentGas.estimatedPrices[4].maxPriorityFeePerGas }
+		{ name: ':orangutan:  FAST (99% chance) :', value: 'MaxFee => '+Math.round(currentGas.estimatedPrices[0].maxFeePerGas)+' & MaxPriorityFee => '+Math.round(currentGas.estimatedPrices[0].maxPriorityFeePerGas) },
+		{ name: ':rabbit2:  MEDIUM (90% chance) :', value: 'MaxFee => '+Math.round(currentGas.estimatedPrices[2].maxFeePerGas)+' & MaxPriorityFee => '+Math.round(currentGas.estimatedPrices[2].maxPriorityFeePerGas) },
+		{ name: ':turtle:  SLOW (70% chance) :', value: 'MaxFee => '+Math.round(currentGas.estimatedPrices[4].maxFeePerGas)+' & MaxPriorityFee => '+Math.round(currentGas.estimatedPrices[4].maxPriorityFeePerGas) }
 	)
 	.setTimestamp();
-
     message.reply({ embeds: [embedMsg] });
 });
 
